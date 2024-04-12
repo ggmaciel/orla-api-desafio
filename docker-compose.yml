@@ -1,0 +1,12 @@
+services:
+  db:
+    image: postgres:16.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: orla_api
+      POSTGRES_PASSWORD: orla_api
+      POSTGRES_DB: orla_api
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
