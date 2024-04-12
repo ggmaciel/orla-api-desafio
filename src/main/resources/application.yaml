@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orla_api?ApplicationName=orla_api
+    username: orla_api
+    # Senha de desenvolvimento
+    password: orla_api
+    hikari:
+      maximum-pool-size: 3
