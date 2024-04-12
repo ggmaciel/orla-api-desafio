@@ -1,9 +1,8 @@
 package com.ggmaciel.orlaapi.domain.project;
 
+import com.ggmaciel.orlaapi.domain.project.dto.CreateProjectDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,6 +13,11 @@ public class ProjectController {
 
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Project> create(@RequestBody CreateProjectDTO createProjectDTO) {
+        return ResponseEntity.ok(projectService.create(createProjectDTO));
     }
 
     @GetMapping("/with-employees")

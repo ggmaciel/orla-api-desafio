@@ -13,10 +13,10 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String cpf;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @ManyToMany
@@ -25,7 +25,10 @@ public class Employee {
             inverseJoinColumns = @JoinColumn(name = "project_id"))
     private Set<Project> projects;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private double salary;
 
     public Employee(Long id, String cpf, String email, Set<Project> projects, String name, double salary) {

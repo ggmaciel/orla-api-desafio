@@ -14,20 +14,22 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(name = "date_of_creation")
+    @Column(name = "date_of_creation", nullable = false)
     private Date dateOfCreation;
+
+    @PrePersist
+    protected void onCreate() {
+        dateOfCreation = new Date();
+    }
 
     @ManyToMany(mappedBy = "projects")
     private Set<Employee> employees;
 
-    public Project(Long id, String name, Date dateOfCreation, Set<Employee> employees) {
-        this.id = id;
+    public Project(String name) {
         this.name = name;
-        this.dateOfCreation = dateOfCreation;
-        this.employees = employees;
     }
 
     public Long getId() {
