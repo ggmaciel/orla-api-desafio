@@ -70,7 +70,7 @@ class EmployeeControllerTest {
     void shouldReturn400WhenCpfHasLessThan11Characters() {
         given()
                 .contentType(CONTENT_TYPE)
-                .body("{\"name\": \"John Doe\", \"cpf\": \"123\"}")
+                .body("{\"name\": \"Fulano\", \"cpf\": \"123\"}")
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -82,7 +82,7 @@ class EmployeeControllerTest {
     void shouldReturn400WhenCpfHasMoreThan11Characters() {
         given()
                 .contentType(CONTENT_TYPE)
-                .body("{\"name\": \"John Doe\", \"cpf\": \"1234567890112345\"}")
+                .body("{\"name\": \"Fulano\", \"cpf\": \"1234567890112345\"}")
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -94,7 +94,7 @@ class EmployeeControllerTest {
     void shouldReturn400WhenCpfIsNull() {
         given()
                 .contentType(CONTENT_TYPE)
-                .body("{\"name\": \"John Doe\", \"cpf\": null}")
+                .body("{\"name\": \"Fulano\", \"cpf\": null}")
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -110,7 +110,7 @@ class EmployeeControllerTest {
 
         given()
                 .contentType(CONTENT_TYPE)
-                .body(String.format("{\"name\": \"John Doe\", \"email\": \"%s\", \"cpf\": \"12345678901\"}", email))
+                .body(String.format("{\"name\": \"Fulano\", \"email\": \"%s\", \"cpf\": \"12345678901\"}", email))
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -122,7 +122,7 @@ class EmployeeControllerTest {
     void shouldReturn400WhenEmailDoesNotHaveAtSign() {
         given()
                 .contentType(CONTENT_TYPE)
-                .body("{\"name\": \"John Doe\", \"email\": \"mailmail.com\", \"cpf\": \"12345678901\"}")
+                .body("{\"name\": \"Fulano\", \"email\": \"mailmail.com\", \"cpf\": \"12345678901\"}")
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -134,7 +134,7 @@ class EmployeeControllerTest {
     void shouldReturn400WhenEmailHasMultiplesAtSigns() {
         given()
                 .contentType(CONTENT_TYPE)
-                .body("{\"name\": \"John Doe\", \"email\": \"test@@example.com\", \"cpf\": \"12345678901\"}")
+                .body("{\"name\": \"Fulano\", \"email\": \"test@@example.com\", \"cpf\": \"12345678901\"}")
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -146,7 +146,7 @@ class EmployeeControllerTest {
     void shouldReturn400WhenEmailDoesNotHaveADomain() {
         given()
                 .contentType(CONTENT_TYPE)
-                .body("{\"name\": \"John Doe\", \"email\": \"test@\", \"cpf\": \"12345678901\"}")
+                .body("{\"name\": \"Fulano\", \"email\": \"test@\", \"cpf\": \"12345678901\"}")
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -158,7 +158,7 @@ class EmployeeControllerTest {
     void shouldReturn400WhenEmailDoesNotHaveAUsername() {
         given()
                 .contentType(CONTENT_TYPE)
-                .body("{\"name\": \"John Doe\", \"email\": \"@example.com\", \"cpf\": \"12345678901\"}")
+                .body("{\"name\": \"Fulano\", \"email\": \"@example.com\", \"cpf\": \"12345678901\"}")
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -170,7 +170,7 @@ class EmployeeControllerTest {
     void shouldReturn400WhenEmailIsNull() {
         given()
                 .contentType(CONTENT_TYPE)
-                .body("{\"name\": \"John Doe\", \"email\": null, \"cpf\": \"12345678901\"}")
+                .body("{\"name\": \"Fulano\", \"email\": null, \"cpf\": \"12345678901\"}")
                 .when()
                 .post(BASE_PATH)
                 .then()

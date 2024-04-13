@@ -24,7 +24,7 @@ class EmployeeServiceTest {
 
     @Test
     void shouldCreateAEmployee() {
-        CreateEmployeeDTO createEmployeeDTO = new CreateEmployeeDTO("John Doe", "12345678900", "", 300L);
+        CreateEmployeeDTO createEmployeeDTO = new CreateEmployeeDTO("Fulano", "12345678900", "", 300L);
 
         assertDoesNotThrow(() -> employeeService.create(createEmployeeDTO));
 
@@ -34,9 +34,9 @@ class EmployeeServiceTest {
     @Test
     void shouldThrowAnExceptionWhenCreatingAnEmployeeWithAnCpfThatWasAlreadyUsed() {
         String cpf = "12345678900";
-        CreateEmployeeDTO createEmployeeDTO = new CreateEmployeeDTO("John Doe", cpf, "", 300L);
+        CreateEmployeeDTO createEmployeeDTO = new CreateEmployeeDTO("Fulano", cpf, "", 300L);
 
-        when(employeeRepository.findByCpf(cpf)).thenReturn(new Employee("John Doe", cpf, "", 300L));
+        when(employeeRepository.findByCpf(cpf)).thenReturn(new Employee("Fulano", cpf, "", 300L));
 
         assertThrows(EntityAlreadyExistsException.class, () -> employeeService.create(createEmployeeDTO));
 
@@ -46,9 +46,9 @@ class EmployeeServiceTest {
     @Test
     void shouldThrowAnExceptionWhenCreatingAnEmployeeWithAnEmailThatWasAlreadyUsed() {
         String email = "mail@mail.com";
-        CreateEmployeeDTO createEmployeeDTO = new CreateEmployeeDTO("John Doe", "12345678900", email, 300L);
+        CreateEmployeeDTO createEmployeeDTO = new CreateEmployeeDTO("Fulano", "12345678900", email, 300L);
 
-        when(employeeRepository.findByEmail(email)).thenReturn(new Employee("John Doe", "12345678900", email, 300L));
+        when(employeeRepository.findByEmail(email)).thenReturn(new Employee("Fulano", "12345678900", email, 300L));
 
         assertThrows(EntityAlreadyExistsException.class, () -> employeeService.create(createEmployeeDTO));
 
