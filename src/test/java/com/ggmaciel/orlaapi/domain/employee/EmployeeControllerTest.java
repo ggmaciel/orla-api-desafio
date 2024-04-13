@@ -1,5 +1,9 @@
 package com.ggmaciel.orlaapi.domain.employee;
 
+import com.ggmaciel.orlaapi.domain.employee.dto.AddProjectDTO;
+import com.ggmaciel.orlaapi.domain.employee.dto.CreateEmployeeDTO;
+import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
+import com.ggmaciel.orlaapi.exception.EntityNotFoundException;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +14,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class EmployeeControllerTest {
@@ -199,5 +206,106 @@ class EmployeeControllerTest {
                 .then()
                 .statusCode(400)
                 .body("salary", equalTo(INVALID_SALARY));
+    }
+
+    @Test
+    void shouldReturn404WhenAEntityIsNotFound() {
+        doThrow(new EntityNotFoundException(ENTITY_NOT_FOUND)).when(employeeService).addProject(any(AddProjectDTO.class));
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"employeeId\": 1, \"projectId\": 1}")
+                .when()
+                .post(BASE_PATH + "/add-project")
+                .then()
+                .statusCode(404)
+                .body("error", equalTo(ENTITY_NOT_FOUND));
+    }
+
+    @Test
+    void shouldReturn400WhenEmployeeIdIsNull() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"employeeId\": null, \"projectId\": 1}")
+                .when()
+                .post(BASE_PATH + "/add-project")
+                .then()
+                .statusCode(400)
+                .body("employeeId", equalTo(ID_MUST_BE_A_VALID_NUMBER));
+    }
+
+    @Test
+    void shouldReturn400WhenProjectIdIsNull() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"employeeId\": 1, \"projectId\": null}")
+                .when()
+                .post(BASE_PATH + "/add-project")
+                .then()
+                .statusCode(400)
+                .body("projectId", equalTo(ID_MUST_BE_A_VALID_NUMBER));
+    }
+
+    @Test
+    void shouldReturn400WhenEmployeeIdIsNegative() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"employeeId\": -1, \"projectId\": 1}")
+                .when()
+                .post(BASE_PATH + "/add-project")
+                .then()
+                .statusCode(400)
+                .body("employeeId", equalTo(ID_MUST_BE_A_VALID_NUMBER));
+    }
+
+    @Test
+    void shouldReturn400WhenProjectIdIsNegative() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"employeeId\": 1, \"projectId\": -1}")
+                .when()
+                .post(BASE_PATH + "/add-project")
+                .then()
+                .statusCode(400)
+                .body("projectId", equalTo(ID_MUST_BE_A_VALID_NUMBER));
+    }
+
+    @Test
+    void shouldReturn200WhenProjectIsAddedSuccessfully() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"employeeId\": 1, \"projectId\": 1}")
+                .when()
+                .post(BASE_PATH + "/add-project")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void shouldReturn409WhenEmployeeWithCpfAlreadyExists() {
+        when(employeeService.create(any(CreateEmployeeDTO.class))).thenThrow(new EntityAlreadyExistsException(EMPLOYEE_WITH_CPF_ALREADY_EXISTS));
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"Test\", \"cpf\": \"12345678901\", \"email\": \"email@mail.com\", \"salary\": 1000}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(409)
+                .body("error", equalTo(EMPLOYEE_WITH_CPF_ALREADY_EXISTS));
+    }
+
+    @Test
+    void shouldReturn409WhenEmployeeWithEmailAlreadyExists() {
+        when(employeeService.create(any(CreateEmployeeDTO.class))).thenThrow(new EntityAlreadyExistsException(EMPLOYEE_WITH_EMAIL_ALREADY_EXISTS));
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"Test\", \"cpf\": \"12345678901\", \"email\": \"email@mail.com\", \"salary\": 1000}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(409)
+                .body("error", equalTo(EMPLOYEE_WITH_EMAIL_ALREADY_EXISTS));
     }
 }
