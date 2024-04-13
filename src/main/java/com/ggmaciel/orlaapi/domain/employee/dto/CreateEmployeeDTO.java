@@ -1,10 +1,10 @@
 package com.ggmaciel.orlaapi.domain.employee.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import static com.ggmaciel.orlaapi.helpers.ConstantHelper.INVALID_CPF_SIZE;
-import static com.ggmaciel.orlaapi.helpers.ConstantHelper.INVALID_NAME_SIZE;
+import static com.ggmaciel.orlaapi.helpers.ConstantHelper.*;
 
 public class CreateEmployeeDTO {
 
@@ -15,6 +15,10 @@ public class CreateEmployeeDTO {
     @NotNull(message = INVALID_CPF_SIZE)
     @Size(min = 11, max = 11, message = INVALID_CPF_SIZE)
     private String cpf;
+
+    @NotNull(message = INVALID_EMAIL)
+    @Email(message = INVALID_EMAIL)
+    @Size(min = 3, max = 255, message = INVALID_EMAIL)
     private String email;
     private double salary;
 

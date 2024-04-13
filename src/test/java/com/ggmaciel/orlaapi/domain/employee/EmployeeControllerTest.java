@@ -7,8 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import static com.ggmaciel.orlaapi.helpers.ConstantHelper.INVALID_CPF_SIZE;
-import static com.ggmaciel.orlaapi.helpers.ConstantHelper.INVALID_NAME_SIZE;
+import static com.ggmaciel.orlaapi.helpers.ConstantHelper.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -101,5 +100,81 @@ class EmployeeControllerTest {
                 .then()
                 .statusCode(400)
                 .body("cpf", equalTo(INVALID_CPF_SIZE));
+    }
+
+    @Test
+    void shouldReturn400WhenEmailHasMoreThan255Characters() {
+        String username = "a".repeat(64);
+        String domain = "b".repeat(189) + ".com";
+        String email = username + "@" + domain;
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .body(String.format("{\"name\": \"John Doe\", \"email\": \"%s\", \"cpf\": \"12345678901\"}", email))
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(400)
+                .body("email", equalTo(INVALID_EMAIL));
+    }
+
+    @Test
+    void shouldReturn400WhenEmailDoesNotHaveAtSign() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"John Doe\", \"email\": \"mailmail.com\", \"cpf\": \"12345678901\"}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(400)
+                .body("email", equalTo(INVALID_EMAIL));
+    }
+
+    @Test
+    void shouldReturn400WhenEmailHasMultiplesAtSigns() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"John Doe\", \"email\": \"test@@example.com\", \"cpf\": \"12345678901\"}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(400)
+                .body("email", equalTo(INVALID_EMAIL));
+    }
+
+    @Test
+    void shouldReturn400WhenEmailDoesNotHaveADomain() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"John Doe\", \"email\": \"test@\", \"cpf\": \"12345678901\"}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(400)
+                .body("email", equalTo(INVALID_EMAIL));
+    }
+
+    @Test
+    void shouldReturn400WhenEmailDoesNotHaveAUsername() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"John Doe\", \"email\": \"@example.com\", \"cpf\": \"12345678901\"}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(400)
+                .body("email", equalTo(INVALID_EMAIL));
+    }
+
+    @Test
+    void shouldReturn400WhenEmailIsNull() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"John Doe\", \"email\": null, \"cpf\": \"12345678901\"}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(400)
+                .body("email", equalTo(INVALID_EMAIL));
     }
 }
