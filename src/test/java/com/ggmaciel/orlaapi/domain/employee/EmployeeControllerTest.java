@@ -29,6 +29,17 @@ class EmployeeControllerTest {
     }
 
     @Test
+    void shouldReturn200WhenEmployeeIsCreatedSuccessfully() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"Test\", \"cpf\": \"12345678901\", \"email\": \"email@mail.com\", \"salary\": 1000}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
     void shouldReturn400WhenNameHasLessThan1Character() {
         given()
                 .contentType(CONTENT_TYPE)
