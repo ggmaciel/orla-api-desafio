@@ -8,6 +8,7 @@ public class ConstantHelper {
     public static final String INVALID_CPF_SIZE = "O campo 'cpf' deve ter 11 caracteres.";
     public static final String INVALID_EMAIL = "O campo 'email' deve ser um endereço de e-mail válido. Por exemplo: 'exemplo@dominio.com'.";
     public static final String INVALID_SALARY = "O campo 'salário' deve ser um número positivo ou zero.";
+    public static final String ENTITY_NOT_FOUND = "Entidade não encontrada. Verifique o ID usado.";
 
     private ConstantHelper() {
         throw new IllegalStateException("Utility class");

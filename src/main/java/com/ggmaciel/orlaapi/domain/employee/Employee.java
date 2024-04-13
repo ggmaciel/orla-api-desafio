@@ -3,6 +3,7 @@ package com.ggmaciel.orlaapi.domain.employee;
 import com.ggmaciel.orlaapi.domain.project.Project;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -40,6 +41,7 @@ public class Employee {
         this.email = email;
         this.name = name;
         this.salary = salary;
+        this.projects = new HashSet<>();
     }
 
     public Long getId() {

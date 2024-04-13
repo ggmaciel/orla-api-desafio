@@ -1,15 +1,21 @@
 package com.ggmaciel.orlaapi.domain.employee;
 
+import com.ggmaciel.orlaapi.domain.employee.dto.AddProjectDTO;
 import com.ggmaciel.orlaapi.domain.employee.dto.CreateEmployeeDTO;
+import com.ggmaciel.orlaapi.domain.project.Project;
+import com.ggmaciel.orlaapi.domain.project.ProjectService;
 import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
+import com.ggmaciel.orlaapi.exception.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Optional;
+
+import static com.ggmaciel.orlaapi.helpers.ConstantHelper.ENTITY_NOT_FOUND;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -18,6 +24,9 @@ class EmployeeServiceTest {
 
     @InjectMocks
     private EmployeeService employeeService;
+
+    @Mock
+    private ProjectService projectService;
 
     @Mock
     private EmployeeRepository employeeRepository;
@@ -52,6 +61,49 @@ class EmployeeServiceTest {
 
         assertThrows(EntityAlreadyExistsException.class, () -> employeeService.create(createEmployeeDTO));
 
+        verify(employeeRepository, times(0)).save(any(Employee.class));
+    }
+
+    @Test
+    void shouldAddProjectToEmployeeWhenEmployeeAndProjectExist() {
+        Long employeeId = 1L;
+        Long projectId = 1L;
+        AddProjectDTO addProjectDTO = new AddProjectDTO(employeeId, projectId);
+        Employee employee = new Employee("Fulano", "12345678900", "mail@mail.com", 300L);
+        Project project = new Project("Project1");
+
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+        when(projectService.findById(projectId)).thenReturn(project);
+
+        employeeService.addProject(addProjectDTO);
+
+        verify(employeeRepository, times(1)).save(employee);
+        assertTrue(employee.getProjects().contains(project));
+    }
+
+    @Test
+    void shouldThrowEntityNotFoundExceptionWhenEmployeeDoesNotExist() {
+        Long employeeId = 1L;
+        Long projectId = 1L;
+        AddProjectDTO addProjectDTO = new AddProjectDTO(employeeId, projectId);
+
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> employeeService.addProject(addProjectDTO));
+        verify(employeeRepository, times(0)).save(any(Employee.class));
+    }
+
+    @Test
+    void shouldThrowEntityNotFoundExceptionWhenProjectDoesNotExist() {
+        Long employeeId = 1L;
+        Long projectId = 1L;
+        AddProjectDTO addProjectDTO = new AddProjectDTO(employeeId, projectId);
+        Employee employee = new Employee("Fulano", "12345678900", "mail@mail.com", 300L);
+
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+        when(projectService.findById(projectId)).thenThrow(new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        assertThrows(EntityNotFoundException.class, () -> employeeService.addProject(addProjectDTO));
         verify(employeeRepository, times(0)).save(any(Employee.class));
     }
 }
