@@ -23,8 +23,7 @@ class ProjectServiceTest {
 
     @Test
     void shouldCreateAProject() {
-        CreateProjectDTO createProjectDTO = new CreateProjectDTO();
-        createProjectDTO.setName("Project 01");
+        CreateProjectDTO createProjectDTO = new CreateProjectDTO("Project 01");
 
         assertDoesNotThrow(() -> projectService.create(createProjectDTO));
 
@@ -34,8 +33,7 @@ class ProjectServiceTest {
     @Test
     void shouldThrowAnExceptionWhenCreatingAProjectThatAlreadyExists() {
         String name = "Project 01";
-        CreateProjectDTO createProjectDTO = new CreateProjectDTO();
-        createProjectDTO.setName(name);
+        CreateProjectDTO createProjectDTO = new CreateProjectDTO(name);
 
         when(projectRepository.findByName(name)).thenReturn(new Project(name));
 

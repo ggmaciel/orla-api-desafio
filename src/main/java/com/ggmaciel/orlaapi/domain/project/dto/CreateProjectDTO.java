@@ -9,6 +9,13 @@ public class CreateProjectDTO {
     @Size(min =  1, max = 255, message = INVALID_NAME_SIZE)
     private String name;
 
+    public CreateProjectDTO() {
+    }
+
+    public CreateProjectDTO(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

@@ -40,6 +40,13 @@ public class Employee {
         this.salary = salary;
     }
 
+    public Employee(String cpf, String email, String name, double salary) {
+        this.cpf = cpf;
+        this.email = email;
+        this.name = name;
+        this.salary = salary;
+    }
+
     public Long getId() {
         return id;
     }
