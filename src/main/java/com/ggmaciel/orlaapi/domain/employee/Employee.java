@@ -31,13 +31,8 @@ public class Employee {
     @Column(nullable = false)
     private double salary;
 
-    public Employee(Long id, String cpf, String email, Set<Project> projects, String name, double salary) {
-        this.id = id;
-        this.cpf = cpf;
-        this.email = email;
-        this.projects = projects;
-        this.name = name;
-        this.salary = salary;
+    public Employee() {
+
     }
 
     public Employee(String cpf, String email, String name, double salary) {
