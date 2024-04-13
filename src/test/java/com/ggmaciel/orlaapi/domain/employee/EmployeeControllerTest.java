@@ -177,4 +177,16 @@ class EmployeeControllerTest {
                 .statusCode(400)
                 .body("email", equalTo(INVALID_EMAIL));
     }
+
+    @Test
+    void shouldReturn400WhenSalaryIsNegative() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"salary\": -1}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(400)
+                .body("salary", equalTo(INVALID_SALARY));
+    }
 }

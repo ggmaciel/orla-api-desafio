@@ -2,6 +2,7 @@ package com.ggmaciel.orlaapi.domain.employee.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.*;
@@ -20,6 +21,8 @@ public class CreateEmployeeDTO {
     @Email(message = INVALID_EMAIL)
     @Size(min = 3, max = 255, message = INVALID_EMAIL)
     private String email;
+
+    @PositiveOrZero(message = INVALID_SALARY)
     private double salary;
 
     public CreateEmployeeDTO() {
