@@ -28,6 +28,10 @@ public class Project {
     @ManyToMany(mappedBy = "projects")
     private Set<Employee> employees;
 
+    public Project() {
+
+    }
+
     public Project(String name) {
         this.name = name;
     }
