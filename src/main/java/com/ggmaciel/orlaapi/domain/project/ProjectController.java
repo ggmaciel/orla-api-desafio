@@ -1,6 +1,7 @@
 package com.ggmaciel.orlaapi.domain.project;
 
 import com.ggmaciel.orlaapi.domain.project.dto.CreateProjectDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<Project> create(@RequestBody CreateProjectDTO createProjectDTO) {
+    public ResponseEntity<Project> create(@Valid @RequestBody CreateProjectDTO createProjectDTO) {
         return ResponseEntity.ok(projectService.create(createProjectDTO));
     }
 
