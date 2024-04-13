@@ -1,13 +1,18 @@
 package com.ggmaciel.orlaapi.domain.project;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ggmaciel.orlaapi.domain.employee.Employee;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.Set;
 
 @Entity
 @Table(name = "project")
+@Data
+@NoArgsConstructor
 public class Project {
 
     @Id
@@ -25,46 +30,11 @@ public class Project {
         dateOfCreation = new Date();
     }
 
+    @JsonManagedReference
     @ManyToMany(mappedBy = "projects")
     private Set<Employee> employees;
 
-    public Project() {
-
-    }
-
     public Project(String name) {
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Date getDateOfCreation() {
-        return dateOfCreation;
-    }
-
-    public void setDateOfCreation(Date dateOfCreation) {
-        this.dateOfCreation = dateOfCreation;
-    }
-
-    public Set<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(Set<Employee> employees) {
-        this.employees = employees;
     }
 }

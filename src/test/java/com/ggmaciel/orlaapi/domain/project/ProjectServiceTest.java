@@ -53,4 +53,9 @@ class ProjectServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> projectService.findById(id));
     }
+
+    // TODO
+    @Test
+    void shouldListProjectsWithRespectiveEmployees() {
+    }
 }

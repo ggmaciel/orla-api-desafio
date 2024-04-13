@@ -4,9 +4,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.*;
 
+@Data
 public class CreateEmployeeDTO {
 
     @NotNull(message = INVALID_NAME_SIZE)
@@ -25,45 +27,10 @@ public class CreateEmployeeDTO {
     @PositiveOrZero(message = INVALID_SALARY)
     private double salary;
 
-    public CreateEmployeeDTO() {
-    }
-
     public CreateEmployeeDTO(String name, String cpf, String email, double salary) {
         this.name = name;
         this.cpf = cpf;
         this.email = email;
-        this.salary = salary;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public double getSalary() {
-        return salary;
-    }
-
-    public void setSalary(double salary) {
         this.salary = salary;
     }
 }

@@ -5,6 +5,8 @@ import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
 import com.ggmaciel.orlaapi.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.ENTITY_NOT_FOUND;
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.PROJECT_ALREADY_EXISTS;
 
@@ -27,5 +29,9 @@ public class ProjectService {
 
     public Project findById(Long id) {
         return projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+    }
+
+    public List<Project> findProjectsWithRespectiveEmployees() {
+        return projectRepository.findAll();
     }
 }
