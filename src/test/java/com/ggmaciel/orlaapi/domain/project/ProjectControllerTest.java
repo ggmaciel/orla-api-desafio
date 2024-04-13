@@ -83,4 +83,16 @@ class ProjectControllerTest {
                 .statusCode(409)
                 .body("error", equalTo(PROJECT_ALREADY_EXISTS));
     }
+
+    @Test
+    void shouldReturn400WhenNameIsNull() {
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": null}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(400)
+                .body("name", equalTo(INVALID_NAME_SIZE));
+    }
 }
