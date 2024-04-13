@@ -2,11 +2,14 @@ package com.ggmaciel.orlaapi.domain.project;
 
 import com.ggmaciel.orlaapi.domain.project.dto.CreateProjectDTO;
 import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
+import com.ggmaciel.orlaapi.exception.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,5 +43,14 @@ class ProjectServiceTest {
         assertThrows(EntityAlreadyExistsException.class, () -> projectService.create(createProjectDTO));
 
         verify(projectRepository, times(0)).save(any(Project.class));
+    }
+
+    @Test
+    void shouldThrowAnExceptionWhenFindingAProjectThatDoesNotExist() {
+        Long id = 1L;
+
+        when(projectRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> projectService.findById(id));
     }
 }
