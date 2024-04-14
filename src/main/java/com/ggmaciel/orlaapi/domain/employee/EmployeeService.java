@@ -9,6 +9,8 @@ import com.ggmaciel.orlaapi.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.*;
 
 @Service
@@ -39,6 +41,11 @@ public class EmployeeService {
 
         employee.getProjects().add(project);
         employeeRepository.save(employee);
+    }
+
+    public Set<Project> findProjectsByEmployeeId(Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+        return employee.getProjects();
     }
 
     private void checkIfExists(String cpf, String email) {

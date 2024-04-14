@@ -12,7 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.ENTITY_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
@@ -105,5 +107,40 @@ class EmployeeServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> employeeService.addProject(addProjectDTO));
         verify(employeeRepository, times(0)).save(any(Employee.class));
+    }
+
+    @Test
+    void shouldReturnProjectsWhenEmployeeIdExists() {
+        Long employeeId = 1L;
+        Employee employee = new Employee();
+        Project project = new Project("Project 01");
+        employee.setProjects(new HashSet<>(Set.of(project)));
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+
+        Set<Project> projects = employeeService.findProjectsByEmployeeId(employeeId);
+
+        assertFalse(projects.isEmpty());
+        assertEquals(1, projects.size());
+        assertTrue(projects.contains(project));
+    }
+
+    @Test
+    void shouldThrowEntityNotFoundExceptionWhenEmployeeIdDoesNotExist() {
+        Long employeeId = 1L;
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> employeeService.findProjectsByEmployeeId(employeeId));
+    }
+
+    @Test
+    void shouldReturnEmptySetWhenEmployeeHasNoProjects() {
+        Long employeeId = 1L;
+        Employee employee = new Employee();
+        employee.setProjects(new HashSet<>());
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+
+        Set<Project> projects = employeeService.findProjectsByEmployeeId(employeeId);
+
+        assertTrue(projects.isEmpty());
     }
 }
