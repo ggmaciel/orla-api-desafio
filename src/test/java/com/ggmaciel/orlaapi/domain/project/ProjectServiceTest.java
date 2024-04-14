@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,8 +56,24 @@ class ProjectServiceTest {
         assertThrows(EntityNotFoundException.class, () -> projectService.findById(id));
     }
 
-    // TODO
     @Test
-    void shouldListProjectsWithRespectiveEmployees() {
+    void shouldReturnListOfProjectsWithRespectiveEmployees() {
+        Project project = new Project("Project 01");
+        when(projectRepository.findAll()).thenReturn(List.of(project));
+
+        List<Project> projects = projectService.findProjectsWithRespectiveEmployees();
+
+        assertFalse(projects.isEmpty());
+        assertEquals(1, projects.size());
+        assertEquals(project, projects.getFirst());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoProjectsWithRespectiveEmployeesExist() {
+        when(projectRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<Project> projects = projectService.findProjectsWithRespectiveEmployees();
+
+        assertTrue(projects.isEmpty());
     }
 }

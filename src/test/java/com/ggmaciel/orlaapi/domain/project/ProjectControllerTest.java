@@ -9,10 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+import java.util.Collections;
+import java.util.List;
+
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.INVALID_NAME_SIZE;
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.PROJECT_ALREADY_EXISTS;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -94,5 +97,33 @@ class ProjectControllerTest {
                 .then()
                 .statusCode(400)
                 .body("name", equalTo(INVALID_NAME_SIZE));
+    }
+
+    @Test
+    void shouldReturn200AndListOfProjectsWithRespectiveEmployees() {
+        Project project = new Project("Project 01");
+        when(projectService.findProjectsWithRespectiveEmployees()).thenReturn(List.of(project));
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/with-employees")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(1))
+                .body("[0].name", equalTo(project.getName()));
+    }
+
+    @Test
+    void shouldReturn200AndEmptyListWhenNoProjectsWithRespectiveEmployeesExist() {
+        when(projectService.findProjectsWithRespectiveEmployees()).thenReturn(Collections.emptyList());
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/with-employees")
+                .then()
+                .statusCode(200)
+                .body("$", empty());
     }
 }
