@@ -1,5 +1,6 @@
 package com.ggmaciel.orlaapi.domain.project;
 
+import com.ggmaciel.orlaapi.domain.employee.Employee;
 import com.ggmaciel.orlaapi.domain.project.dto.CreateProjectDTO;
 import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
 import com.ggmaciel.orlaapi.exception.EntityNotFoundException;
@@ -9,9 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -75,5 +74,42 @@ class ProjectServiceTest {
         List<Project> projects = projectService.findProjectsWithRespectiveEmployees();
 
         assertTrue(projects.isEmpty());
+    }
+
+    @Test
+    void shouldReturnSetOfEmployeesWhenFindingEmployeesByProjectId() {
+        Long projectId = 1L;
+        Project project = new Project("Project 01");
+        project.setId(projectId);
+        Employee employee = new Employee();
+        project.setEmployees(new HashSet<>(Set.of(employee)));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        Set<Employee> employees = projectService.findEmployeesByProjectId(projectId);
+
+        assertFalse(employees.isEmpty());
+        assertEquals(1, employees.size());
+        assertTrue(employees.contains(employee));
+    }
+
+    @Test
+    void shouldThrowEntityNotFoundExceptionWhenFindingEmployeesByNonExistentProjectId() {
+        Long projectId = 1L;
+        when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> projectService.findEmployeesByProjectId(projectId));
+    }
+
+    @Test
+    void shouldReturnEmptySetWhenProjectHasNoEmployees() {
+        Long projectId = 1L;
+        Project project = new Project("Project 01");
+        project.setId(projectId);
+        project.setEmployees(new HashSet<>());
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        Set<Employee> employees = projectService.findEmployeesByProjectId(projectId);
+
+        assertTrue(employees.isEmpty());
     }
 }
