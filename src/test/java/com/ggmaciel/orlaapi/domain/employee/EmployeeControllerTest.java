@@ -1,5 +1,6 @@
 package com.ggmaciel.orlaapi.domain.employee;
 
+import com.ggmaciel.orlaapi.AbstractDatabaseIntegrationConfiguration;
 import com.ggmaciel.orlaapi.domain.employee.dto.AddProjectDTO;
 import com.ggmaciel.orlaapi.domain.employee.dto.CreateEmployeeDTO;
 import com.ggmaciel.orlaapi.domain.employee.dto.EmployeeProjectDTO;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class EmployeeControllerTest {
+class EmployeeControllerTest extends AbstractDatabaseIntegrationConfiguration {
     private final String BASE_PATH = "/v1/employee";
     private final String CONTENT_TYPE = "application/json";
 

@@ -1,5 +1,6 @@
 package com.ggmaciel.orlaapi.domain.project;
 
+import com.ggmaciel.orlaapi.AbstractDatabaseIntegrationConfiguration;
 import com.ggmaciel.orlaapi.domain.employee.Employee;
 import com.ggmaciel.orlaapi.domain.project.dto.CreateProjectDTO;
 import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
@@ -23,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ProjectControllerTest {
+class ProjectControllerTest extends AbstractDatabaseIntegrationConfiguration {
     private final String BASE_PATH = "/v1/project";
     private final String CONTENT_TYPE = "application/json";
 
