@@ -78,6 +78,8 @@
 	</dependencies>
 
 	<build>
+		<!-- Used for local development -->
+		<finalName>orla-api</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
