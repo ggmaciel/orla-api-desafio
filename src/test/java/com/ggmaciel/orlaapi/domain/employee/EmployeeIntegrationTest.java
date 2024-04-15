@@ -1,5 +1,6 @@
 package com.ggmaciel.orlaapi.domain.employee;
 
+import com.ggmaciel.orlaapi.domain.project.ProjectRepository;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,6 +28,9 @@ class EmployeeIntegrationTest {
     @Autowired
     EmployeeRepository employeeRepository;
 
+    @Autowired
+    ProjectRepository projectRepository;
+
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.2-alpine");
 
     @BeforeAll
@@ -51,6 +55,7 @@ class EmployeeIntegrationTest {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
         employeeRepository.deleteAll();
+        projectRepository.deleteAll();
     }
 
     @Test
@@ -70,5 +75,33 @@ class EmployeeIntegrationTest {
         Employee actualEmployee = employeeRepository.findById(1L).orElseThrow();
 
         assertEquals(expectedEmployee, actualEmployee);
+    }
+
+    @Test
+    void shouldReturnErrorWhenEmployeeWithCpfAlreadyExists() {
+        Employee employee = new Employee("12345678901", "email@mail.com", "Test", 1000.0);
+        employeeRepository.save(employee);
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"Test\", \"cpf\": \"12345678901\", \"email\": \"mail@mail.com\", \"salary\": 1000}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(409);
+    }
+
+    @Test
+    void shouldReturnErrorWhenEmployeeWithEmailAlreadyExists() {
+        Employee employee = new Employee("12345678903", "email@mail.com", "Test", 1000.0);
+        employeeRepository.save(employee);
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"name\": \"Test\", \"cpf\": \"12345678901\", \"email\": \"email@mail.com\", \"salary\": 1000}")
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(409);
     }
 }
