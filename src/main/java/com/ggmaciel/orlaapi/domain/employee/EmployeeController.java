@@ -2,11 +2,13 @@ package com.ggmaciel.orlaapi.domain.employee;
 
 import com.ggmaciel.orlaapi.domain.employee.dto.AddProjectDTO;
 import com.ggmaciel.orlaapi.domain.employee.dto.CreateEmployeeDTO;
+import com.ggmaciel.orlaapi.domain.employee.dto.EmployeeProjectDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/v1/employee")
@@ -26,5 +28,10 @@ public class EmployeeController {
     public ResponseEntity<Map<String, String>> addProject(@Valid @RequestBody AddProjectDTO addProjectDTO) {
         employeeService.addProject(addProjectDTO);
         return ResponseEntity.ok(Map.of("message", "Project added to employee"));
+    }
+
+    @GetMapping("/{employeeId}/projects")
+    public ResponseEntity<Set<EmployeeProjectDTO>> findProjectsByEmployeeId(@PathVariable Long employeeId) {
+        return ResponseEntity.ok(employeeService.findProjectsByEmployeeId(employeeId));
     }
 }

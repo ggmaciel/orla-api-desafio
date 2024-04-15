@@ -2,6 +2,7 @@ package com.ggmaciel.orlaapi.domain.employee;
 
 import com.ggmaciel.orlaapi.domain.employee.dto.AddProjectDTO;
 import com.ggmaciel.orlaapi.domain.employee.dto.CreateEmployeeDTO;
+import com.ggmaciel.orlaapi.domain.employee.dto.EmployeeProjectDTO;
 import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
 import com.ggmaciel.orlaapi.exception.EntityNotFoundException;
 import io.restassured.RestAssured;
@@ -11,9 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.*;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -307,5 +313,51 @@ class EmployeeControllerTest {
                 .then()
                 .statusCode(409)
                 .body("error", equalTo(EMPLOYEE_WITH_EMAIL_ALREADY_EXISTS));
+    }
+
+    @Test
+    void shouldReturn200AndProjectsWhenEmployeeIdExists() {
+        Long employeeId = 1L;
+        EmployeeProjectDTO projectDTO = new EmployeeProjectDTO(1L, "Project 01", new Date());
+        Set<EmployeeProjectDTO> dto = new HashSet<>(Set.of(projectDTO));
+        when(employeeService.findProjectsByEmployeeId(employeeId)).thenReturn(dto);
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/" + employeeId + "/projects")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(1))
+                .body("[0].id", equalTo(projectDTO.getId().intValue()))
+                .body("[0].name", equalTo(projectDTO.getName()));
+    }
+
+    @Test
+    void shouldReturn200AndEmptySetWhenEmployeeHasNoProjects() {
+        Long employeeId = 1L;
+        when(employeeService.findProjectsByEmployeeId(employeeId)).thenReturn(Collections.emptySet());
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/" + employeeId + "/projects")
+                .then()
+                .statusCode(200)
+                .body("$", empty());
+    }
+
+    @Test
+    void shouldReturn404WhenEmployeeIdDoesNotExist() {
+        Long employeeId = 1L;
+        when(employeeService.findProjectsByEmployeeId(employeeId)).thenThrow(new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/" + employeeId + "/projects")
+                .then()
+                .statusCode(404)
+                .body("error", equalTo(ENTITY_NOT_FOUND));
     }
 }
