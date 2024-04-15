@@ -19,6 +19,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -141,5 +142,45 @@ class EmployeeIntegrationTest {
 
         assertEquals(projectIds.getFirst(), project.getId());
         assertEquals(1, projectIds.size());
+    }
+
+    @Test
+    void shouldFindProjectsByEmployeeId() {
+        Employee employee = new Employee("12345678901", "email@mail.com", "Test", 1000.0);
+        employee = employeeRepository.save(employee);
+
+        Project project1 = new Project("Project Test");
+        project1 = projectRepository.save(project1);
+        employee.getProjects().add(project1);
+
+        Project project2 = new Project("Project Test 2");
+        project2 = projectRepository.save(project2);
+        employee.getProjects().add(project2);
+
+        employeeRepository.save(employee);
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/" + employee.getId() + "/projects")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(2))
+                .body("id", containsInAnyOrder(project1.getId().intValue(), project2.getId().intValue()))
+                .body("name", containsInAnyOrder(project1.getName(), project2.getName()));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenEmployeeHasNoProjects() {
+        Employee employee = new Employee("12345678901", "email@mail.com", "Test", 1000.0);
+        employee = employeeRepository.save(employee);
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/" + employee.getId() + "/projects")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(0));
     }
 }
