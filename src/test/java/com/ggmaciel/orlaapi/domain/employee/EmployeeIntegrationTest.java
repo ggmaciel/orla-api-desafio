@@ -1,7 +1,9 @@
 package com.ggmaciel.orlaapi.domain.employee;
 
+import com.ggmaciel.orlaapi.domain.project.Project;
 import com.ggmaciel.orlaapi.domain.project.ProjectRepository;
 import io.restassured.RestAssured;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,10 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
+
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,6 +34,12 @@ class EmployeeIntegrationTest {
 
     @Autowired
     ProjectRepository projectRepository;
+
+    @Autowired
+    EntityManager entityManager;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.2-alpine");
 
@@ -54,15 +64,12 @@ class EmployeeIntegrationTest {
     public void setUp() {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
-        employeeRepository.deleteAll();
-        projectRepository.deleteAll();
+        jdbcTemplate.execute("TRUNCATE TABLE employee_project, employee, project RESTART IDENTITY CASCADE");
     }
 
     @Test
-    @Transactional
     void shouldCreateAEmployee() {
         Employee expectedEmployee = new Employee("12345678901", "email@mail.com", "Test", 1000.0);
-        expectedEmployee.setId(1L);
 
         given()
                 .contentType(CONTENT_TYPE)
@@ -72,7 +79,9 @@ class EmployeeIntegrationTest {
                 .then()
                 .statusCode(200);
 
-        Employee actualEmployee = employeeRepository.findById(1L).orElseThrow();
+        expectedEmployee.setId(1L);
+
+        Employee actualEmployee = employeeRepository.findById(expectedEmployee.getId()).orElseThrow();
 
         assertEquals(expectedEmployee, actualEmployee);
     }
@@ -103,5 +112,34 @@ class EmployeeIntegrationTest {
                 .post(BASE_PATH)
                 .then()
                 .statusCode(409);
+    }
+
+    @Test
+    void shouldAddProjectToEmployee() {
+        Employee employee = new Employee("12345678901", "email@mail.com", "Test", 1000.0);
+        employee = employeeRepository.save(employee);
+
+        Project project = new Project("Project Test");
+        project = projectRepository.save(project);
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .body("{\"employeeId\": 1, \"projectId\": 1}")
+                .when()
+                .post(BASE_PATH + "/add-project")
+                .then()
+                .statusCode(200);
+
+        // Avoid LazyInitializationException - https://vladmihalcea.com/the-best-way-to-handle-the-lazyinitializationexception/
+        List<Long> projectIds = ((List<?>) entityManager
+                .createNativeQuery("SELECT project_id FROM employee_project WHERE employee_id = :id")
+                .setParameter("id", employee.getId())
+                .getResultList())
+                .stream()
+                .map(obj -> ((Number) obj).longValue())
+                .toList();
+
+        assertEquals(projectIds.getFirst(), project.getId());
+        assertEquals(1, projectIds.size());
     }
 }
