@@ -121,4 +121,41 @@ class ProjectIntegrationTest {
                 .body("findAll { it.employees.size() == 2 }.employees.id.flatten()", containsInAnyOrder(employee1.getId().intValue(), employee2.getId().intValue()))
                 .body("findAll { it.employees.size() == 1 }.employees.id.flatten()", containsInAnyOrder(employee1.getId().intValue()));
     }
+
+    @Test
+    void shouldReturnEmptyListOfEmployeesForProjectWithoutEmployees() {
+        projectRepository.save(new Project("Project 1"));
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/with-employees")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(1))
+                .body("employees[0]", empty());
+    }
+
+    @Test
+    void shouldFindEmployeesByProjectId() {
+        Employee employee1 = employeeRepository.save(new Employee("12345678901", "email@mail.com", "Test", 1000.0));
+        Employee employee2 = employeeRepository.save(new Employee("12345678902", "mail@email.com", "Test", 1000.0));
+        Project project1 = projectRepository.save(new Project("Project 1"));
+
+        employee1.getProjects().add(project1);
+        employeeRepository.save(employee1);
+
+        employee2.getProjects().add(project1);
+        employeeRepository.save(employee2);
+
+        given()
+                .contentType(CONTENT_TYPE)
+                .when()
+                .get(BASE_PATH + "/" + project1.getId() + "/employees")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(2))
+                .body("id", containsInAnyOrder(employee1.getId().intValue(), employee2.getId().intValue()))
+                .body("name", containsInAnyOrder(employee1.getName(), employee2.getName()));
+    }
 }
