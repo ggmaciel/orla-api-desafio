@@ -29,7 +29,7 @@ A aplicação utiliza PostgreSQL como sistema de gerenciamento de banco de dados
 ### `POST /v1/project`
 Cadastra um projeto.
 
-#### Rquest Body
+#### Request Body
 ```json
 {
   "name": "Projeto 1"
@@ -39,7 +39,7 @@ Cadastra um projeto.
 ### `POST /v1/employee`
 Cadastra um funcionário.
 
-#### Body
+#### Request Body
 ```json
 {
   "name": "Fulano",
@@ -52,7 +52,7 @@ Cadastra um funcionário.
 ### `POST /v1/employee/add-project`
 Associa um funcionário a um projeto.
 
-#### Body
+#### Request Body
 ```json
 {
   "employeeId": 1,
@@ -63,7 +63,7 @@ Associa um funcionário a um projeto.
 ### `GET /v1/project/with-employees`
 Lista projetos com seus respectivos funcionários.
 
-#### Body
+#### Request Body
 N/A
 
 #### Resposta
