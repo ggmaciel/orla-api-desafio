@@ -2,6 +2,7 @@ package com.ggmaciel.orlaapi.domain.employee;
 
 import com.ggmaciel.orlaapi.domain.employee.dto.AddProjectDTO;
 import com.ggmaciel.orlaapi.domain.employee.dto.CreateEmployeeDTO;
+import com.ggmaciel.orlaapi.domain.employee.dto.EmployeeProjectDTO;
 import com.ggmaciel.orlaapi.domain.project.Project;
 import com.ggmaciel.orlaapi.domain.project.ProjectService;
 import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
@@ -115,13 +116,14 @@ class EmployeeServiceTest {
         Employee employee = new Employee();
         Project project = new Project("Project 01");
         employee.setProjects(new HashSet<>(Set.of(project)));
+        EmployeeProjectDTO dto = new EmployeeProjectDTO(project.getId(), project.getName(), project.getDateOfCreation());
         when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
 
-        Set<Project> projects = employeeService.findProjectsByEmployeeId(employeeId);
+        Set<EmployeeProjectDTO> employeeProjects = employeeService.findProjectsByEmployeeId(employeeId);
 
-        assertFalse(projects.isEmpty());
-        assertEquals(1, projects.size());
-        assertTrue(projects.contains(project));
+        assertFalse(employeeProjects.isEmpty());
+        assertEquals(1, employeeProjects.size());
+        assertTrue(employeeProjects.contains(dto));
     }
 
     @Test
@@ -139,8 +141,8 @@ class EmployeeServiceTest {
         employee.setProjects(new HashSet<>());
         when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
 
-        Set<Project> projects = employeeService.findProjectsByEmployeeId(employeeId);
+        Set<EmployeeProjectDTO> dto = employeeService.findProjectsByEmployeeId(employeeId);
 
-        assertTrue(projects.isEmpty());
+        assertTrue(dto.isEmpty());
     }
 }

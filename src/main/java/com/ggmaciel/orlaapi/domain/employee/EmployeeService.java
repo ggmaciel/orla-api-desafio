@@ -2,6 +2,7 @@ package com.ggmaciel.orlaapi.domain.employee;
 
 import com.ggmaciel.orlaapi.domain.employee.dto.AddProjectDTO;
 import com.ggmaciel.orlaapi.domain.employee.dto.CreateEmployeeDTO;
+import com.ggmaciel.orlaapi.domain.employee.dto.EmployeeProjectDTO;
 import com.ggmaciel.orlaapi.domain.project.Project;
 import com.ggmaciel.orlaapi.domain.project.ProjectService;
 import com.ggmaciel.orlaapi.exception.EntityAlreadyExistsException;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 import static com.ggmaciel.orlaapi.helpers.ConstantHelper.*;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 public class EmployeeService {
@@ -43,9 +45,9 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public Set<Project> findProjectsByEmployeeId(Long employeeId) {
+    public Set<EmployeeProjectDTO> findProjectsByEmployeeId(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
-        return employee.getProjects();
+        return employee.getProjects().stream().map(project -> new EmployeeProjectDTO(project.getId(), project.getName(), project.getDateOfCreation())).collect(toSet());
     }
 
     private void checkIfExists(String cpf, String email) {
